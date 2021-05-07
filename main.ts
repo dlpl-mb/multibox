@@ -1,4 +1,17 @@
 
+function set_punkt(snr:number=0,x: number, y:number, color: number) {
+    hwx = arr_neop_settings[snr].hwMatrix[0];
+    hwy = arr_neop_settings[snr].hwMatrix[1];
+    //let px = (hwy-y-1)*hwy + ((y % 2) ? hwx-(x % hwx)-1:(x % hwx))
+    let t= x 
+    if ((y % 2)!=(hwy % 2)) {
+       t=(hwx - 1 - x)
+    }
+    let px = (hwy-1-y) * hwx + t
+    neop_ges[snr].setPixelColor(px, color);
+    neop_ges[snr].show()
+}
+
 function set_system(sname: number) {
     if (sname == 0) {
         init_strip(0,2,0) //standard, 8x8,pin1 
@@ -96,14 +109,6 @@ function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=fa
     if (hwx>zch_bit_breite) {
         neop_ges[snr].show()
     }
-}
-
-function set_punkt(snr:number=0,x: number, y:number, color: number) {
-    hwx = arr_neop_settings[snr].hwMatrix[0];
-    hwy = arr_neop_settings[snr].hwMatrix[1];
-    let px = (hwy-y-1)*hwy + ((y % 2) ? hwx-(x % hwx)-1:(x % hwx))
-    neop_ges[snr].setPixelColor(px, color);
-    neop_ges[snr].show()
 }
 
 
