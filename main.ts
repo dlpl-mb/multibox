@@ -40,13 +40,7 @@ function get_bst_matrix(zch: string = "A") {
     return arr_zeichen[found]
 }
 
-function scrollen () {
-    for (let strip = 0; strip < hwy; strip++) {
-        let sh = (strip % 2) ? -1:1
-        zstrip[strip].shift(sh)
-    }
-}
-function get_ystreifen(bit:number=0,x_add:number=0,color:number) {
+function get_ystreifen(bit:number=0,x_add:number=0,color:number,zstrip:neopixel.Strip[]) {
     zeichen_matrix.forEach(function (zahl, zeile) {
         if (zahl & Math.pow(2, bit)) {
             let b=bit+x_add
@@ -68,6 +62,7 @@ function frei_matrix(zch_str:string) {
 }    
 
 function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=false) {
+    let zstrip: neopixel.Strip[] = []
     hwx = arr_neop_settings[snr].hwMatrix[0];
     hwy = arr_neop_settings[snr].hwMatrix[1];
 
@@ -89,12 +84,15 @@ function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=fa
         let str = zch_bit_breite;
         for (let n=str;n>=0;n--) {
             if (scroll_flag) {
-                get_ystreifen(n,-n,color)
+                get_ystreifen(n,-n,color,zstrip)
                 neop_ges[snr].show()
                 basic.pause(pause_bst/10)
-                scrollen()
+                for (let strip = 0; strip < hwy; strip++) {
+                    let sh = (strip % 2) ? -1:1
+                    zstrip[strip].shift(sh)
+                 }
             } else {
-                get_ystreifen(n,center,color)
+                get_ystreifen(n,center,color,zstrip)
                 neop_ges[snr].show()
                 basic.pause(80)
             }
@@ -274,7 +272,7 @@ let hwx:number=8
 let hwy:number=8
 const zch_bit_breite:number=5
 
-let zstrip: neopixel.Strip[] = []
+//let zstrip: neopixel.Strip[] = []
 
 let neop_ges: Array<neopixel.Strip> = []
 let arr_neop_settings: Array<neop> = []
