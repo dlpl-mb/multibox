@@ -68,7 +68,7 @@ function frei_matrix(zch_str:string) {
 }    
   
 function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=false) {
-    let zstrip: neopixel.Strip[] = []
+    
     hwx = arr_neop_settings[snr].hwMatrix[0];
     hwy = arr_neop_settings[snr].hwMatrix[1];
 
