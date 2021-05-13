@@ -66,8 +66,9 @@ function frei_matrix(zch_str:string) {
     return ret
 }    
   
+let a_txt = ["","",""]  
 function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=false) {
-    
+    a_txt[snr]=txt    
     hwx = arr_neop_settings[snr].hwMatrix[0];
     hwy = arr_neop_settings[snr].hwMatrix[1];
 
@@ -85,22 +86,17 @@ function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=fa
     neop_ges_teil[snr]=zstrip
 
 
-
-
-
-
-
-
-    for (let bst_pos = 0; bst_pos < txt.length; bst_pos++) {
+    for (let bst_pos = 0; bst_pos < a_txt[snr].length; bst_pos++) {
         if (!scroll_flag) {
             neop_ges[snr].clear()
         }
-        zeichen_matrix=get_bst_matrix(txt[bst_pos])
+        
+        zeichen_matrix=get_bst_matrix(a_txt[snr][bst_pos])
         let str = zch_bit_breite;
         for (let n=str;n>=0;n--) {
             if (scroll_flag) {
                 get_ystreifen(n,-n,color,neop_ges_teil[snr])
-                //serial.writeValue("snr", snr)
+                serial.writeValue("snr", snr)
                 
                 neop_ges[snr].show()
                 basic.pause(pause_bst/10)
@@ -113,7 +109,7 @@ function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=fa
         }
         if (!scroll_flag) {
             neop_ges[snr].show()
-            if (txt.length>1) {
+            if (a_txt[snr].length>1) {
                 basic.pause(pause_bst)
             }
         }    
