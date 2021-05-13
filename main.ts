@@ -78,12 +78,28 @@ function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=fa
         txt=";";
     }
     neop_ges[snr].clear()
-    let zstrip: neopixel.Strip[]=[]  
+    // let zstrip: neopixel.Strip[]=[]  
+
+    // neop_ges_teil[snr]:neopixel.Strip[]=zstrip
+
     for (let n = 0; n <= hwy; n++) {
-        zstrip[n] = neop_ges[snr].range(n * hwx, hwx)
+        //zstrip[n] = neop_ges[snr].range(n * hwx, hwx)
+        neop_ges_teil[snr][n]=neop_ges[snr].range(n * hwx, hwx)
     }
 
-    neop_ges_teil[snr]=zstrip
+    //neop_ges_teil[snr]=zstrip
+
+    // let iii=0;
+    // let int_snr=control.setInterval(function () {
+        
+    //     music.playTone(Note.C, music.beat())
+    //     iii++
+    //     if (iii>10) {
+    //         serial.writeValue("snr", int_snr)
+    //         control.clearInterval(int_snr, control.IntervalMode.Interval)
+    //         iii=0;
+    //     }
+    // }, 4000, control.IntervalMode.Interval)
 
 
     for (let bst_pos = 0; bst_pos < a_txt[snr].length; bst_pos++) {
@@ -91,15 +107,21 @@ function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=fa
             neop_ges[snr].clear()
         }
         
+        serial.writeValue(a_txt[snr], snr)
         zeichen_matrix=get_bst_matrix(a_txt[snr][bst_pos])
         let str = zch_bit_breite;
         for (let n=str;n>=0;n--) {
             if (scroll_flag) {
+
+serial.writeValue(a_txt[snr], snr)
+//console.log(neop_ges_teil[snr])
+// const xxx = neop_ges_teil[snr]
                 get_ystreifen(n,-n,color,neop_ges_teil[snr])
-                serial.writeValue("snr", snr)
                 
                 neop_ges[snr].show()
                 basic.pause(pause_bst/10)
+//basic.pause(pause_bst/20)    
+//console.log(neop_ges_teil[snr])            
                 scrollen(neop_ges_teil[snr])
             } else {
                 get_ystreifen(n,center,color,neop_ges_teil[snr])
@@ -117,6 +139,7 @@ function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=fa
     if (hwx>zch_bit_breite) {
         neop_ges[snr].show()
     }
+    //control.clearInterval(int_snr, control.IntervalMode.Interval)
 }
 
 
