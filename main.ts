@@ -54,7 +54,6 @@ function get_ystreifen(bit:number=0,x_add:number=0,color:number,zstrip:neopixel.
             zstrip[zeile].setPixelColor(px, color)
         }
     })
-    
 }
 function frei_matrix(zch_str:string) {
     let ret="";
@@ -78,20 +77,18 @@ function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=fa
         txt=";";
     }
     neop_ges[snr].clear()
-    //let sss:neopixel.Strip[]=[]
-    //let zstrip = [neopixel.Strip[],neopixel.Strip[],neopixel.Strip[]]
-    //let zstrip = [sss,sss,sss]
-
-    //let zstrip = [neopixel.Strip,neopixel.Strip,neopixel.Strip]
-
-    // let zstrip: neopixel.Strip[]=[]  
-    let zstrip: neopixel.Strip[][]  
-
-  
+    let zstrip: neopixel.Strip[]=[]  
     for (let n = 0; n <= hwy; n++) {
-        zstrip[0][n] = neop_ges[snr].range(n * hwx, hwx)
-        //set zstrip[n] = neop_ges[snr].range(n * hwx, hwx)
+        zstrip[n] = neop_ges[snr].range(n * hwx, hwx)
     }
+
+    neop_ges_teil[snr]=zstrip
+
+
+
+
+
+
 
 
     for (let bst_pos = 0; bst_pos < txt.length; bst_pos++) {
@@ -102,12 +99,14 @@ function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=fa
         let str = zch_bit_breite;
         for (let n=str;n>=0;n--) {
             if (scroll_flag) {
-                get_ystreifen(n,-n,color,zstrip[0])
+                get_ystreifen(n,-n,color,neop_ges_teil[snr])
+                //serial.writeValue("snr", snr)
+                
                 neop_ges[snr].show()
                 basic.pause(pause_bst/10)
-                scrollen(zstrip[0])
+                scrollen(neop_ges_teil[snr])
             } else {
-                get_ystreifen(n,center,color,zstrip[0])
+                get_ystreifen(n,center,color,neop_ges_teil[snr])
                 neop_ges[snr].show()
                 basic.pause(80)
             }
@@ -287,10 +286,21 @@ let hwx:number=8
 let hwy:number=8
 const zch_bit_breite:number=5
 
-// let zstrip: neopixel.Strip[] = []
 
 let neop_ges: Array<neopixel.Strip> = []
 let arr_neop_settings: Array<neop> = []
+
+
+
+
+let xstrip: neopixel.Strip[]=[]  
+let neop_ges_teil:Array<neopixel.Strip[]> = []
+
+neop_ges_teil.push(xstrip)
+neop_ges_teil.push(xstrip)
+neop_ges_teil.push(xstrip)
+
+
 
 let arr_zeichen: number[][];
 let bst_reihe: string = "";
