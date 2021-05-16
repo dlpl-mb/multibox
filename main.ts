@@ -40,14 +40,14 @@ function get_bst_matrix(zch: string = "A") {
     return arr_zeichen[found]
 }
 
-function scrollen () {
+function scrollen (zstrip: neopixel.Strip[]) {
     for (let strip = 0; strip < hwy; strip++) {
         let sh = (strip % 2) ? -1:1
         zstrip[strip].shift(sh)
     }
 }
-function get_ystreifen(bit:number=0,x_add:number=0,color:number) {
-    zeichen_matrix.forEach(function (zahl, zeile) {
+function get_ystreifen(z_matrix:Array<number>,bit:number=0,x_add:number=0,color:number,zstrip:neopixel.Strip[]) {
+    z_matrix.forEach(function (zahl, zeile) {
         if (zahl & Math.pow(2, bit)) {
             let b=bit+x_add
             let px=(zeile % 2) ? (hwx-1-b):b
@@ -77,24 +77,20 @@ function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=fa
         txt=";";
     }
     neop_ges[snr].clear()
-    for (let n = 0; n <= hwy; n++) {
-        zstrip[n] = neop_ges[snr].range(n * hwx, hwx)
-    }
-
     for (let bst_pos = 0; bst_pos < txt.length; bst_pos++) {
         if (!scroll_flag) {
             neop_ges[snr].clear()
         }
         zeichen_matrix=get_bst_matrix(txt[bst_pos])
         let str = zch_bit_breite;
-        for (let n=str;n>=0;n--) {
+        for (let s=str;s>=0;s--) {
             if (scroll_flag) {
-                get_ystreifen(n,-n,color)
+                get_ystreifen(zeichen_matrix,s,-s,color,neop_ranges[snr])
                 neop_ges[snr].show()
                 basic.pause(pause_bst/10)
-                scrollen()
+                scrollen(neop_ranges[snr])
             } else {
-                get_ystreifen(n,center,color)
+                get_ystreifen(zeichen_matrix,s,center,color,neop_ranges[snr])
                 neop_ges[snr].show()
                 basic.pause(80)
             }
@@ -226,16 +222,22 @@ function default_strip_data() {
     arr_neop_settings.push({ pin: arr_tech_pin[2], hwMatrix: arr_tech_matrix[1] })
 }
 
-function init_strip(nrMatrix: number, hwMatrix: number, pin: number) {
-    arr_neop_settings[nrMatrix].pin = pin;
-    arr_neop_settings[nrMatrix].hwMatrix = arr_tech_matrix[hwMatrix];
+function init_strip(snr: number, hwMatrix: number, pin: number) {
+    arr_neop_settings[snr].pin = pin;
+    arr_neop_settings[snr].hwMatrix = arr_tech_matrix[hwMatrix];
     let pixelAnzahl = arr_tech_matrix[hwMatrix][0] * arr_tech_matrix[hwMatrix][1]
     let strip = neopixel.create(arr_tech_pin[pin], pixelAnzahl, NeoPixelMode.RGB)
+    neop_ges[snr] = strip
     strip.setBrightness(strip_helligkeit)
-    neop_ges[nrMatrix] = strip
     strip.clear()
     strip.show()
-    neo_strip_anzahl = Math.max(nrMatrix + 1, neo_strip_anzahl)
+    neo_strip_anzahl = Math.max(snr + 1, neo_strip_anzahl)
+
+    let xstrip: neopixel.Strip[] =[]
+    for (let z = 0; z < hwy; z++) {
+        xstrip.push(neop_ges[snr].range(z * hwx, hwx))
+    }
+    neop_ranges.push(xstrip)
 }
 
 
@@ -274,9 +276,9 @@ let hwx:number=8
 let hwy:number=8
 const zch_bit_breite:number=5
 
-let zstrip: neopixel.Strip[] = []
-
 let neop_ges: Array<neopixel.Strip> = []
+let neop_ranges:Array<neopixel.Strip[]> = []
+
 let arr_neop_settings: Array<neop> = []
 
 let arr_zeichen: number[][];
