@@ -17,9 +17,9 @@ enum sName {
 enum nrMatrix {
     //% block="1"
     zentral,
-    //% block="2"
-    links,
     //% block="3"
+    links,
+    //% block="4"
     rechts
    }
 

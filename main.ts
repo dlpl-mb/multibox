@@ -93,9 +93,8 @@ function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=fa
             } else {
                 get_ystreifen(zeichen_matrix,s,center,color,neop_ranges[snr])
                 neop_ges[snr].show()
-                //basic.pause(80)
+                basic.pause(80)
             }
-            basic.showString(txt[bst_pos])
         }
         if (!scroll_flag) {
             neop_ges[snr].show()
@@ -272,7 +271,6 @@ let arr_tech_matrix = [[5, 5],[5, 7], [8, 8], [16, 16]];
 let arr_tech_pin = [DigitalPin.P0, DigitalPin.P1, DigitalPin.P2, DigitalPin.P3, DigitalPin.P4, DigitalPin.P5, DigitalPin.P6, DigitalPin.P7, DigitalPin.P8];
 // hardwareeinstellungen end ###########################
 
-// let zeichen_matrix: Array<number> = []
 let neo_strip_anzahl: number = 1;
 let shift: number = 0
 let strip_helligkeit: number = 80;
@@ -286,7 +284,6 @@ let neop_ges: Array<neopixel.Strip> = []
 let neop_ranges:Array<neopixel.Strip[]> = []
 
 
-
 let arr_zeichen: number[][];
 let bst_reihe: string = "";
 
@@ -295,6 +292,6 @@ let bst_reihe: string = "";
 //beginn initialisierung ############################
 init_alphabet();
 default_strip_data();
-//set_system(1);
+set_system(1);
 
 // ende Initialisierung
