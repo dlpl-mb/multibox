@@ -1,3 +1,59 @@
+function init_strip(snr: number, hwMatrix: number, pin: number) {
+    arr_neop_settings[snr].pin = pin;
+    arr_neop_settings[snr].hwMatrix = arr_tech_matrix[hwMatrix];
+
+    hwx = arr_neop_settings[snr].hwMatrix[0];
+    hwy = arr_neop_settings[snr].hwMatrix[1];
+
+    let pixelAnzahl = arr_tech_matrix[hwMatrix][0] * arr_tech_matrix[hwMatrix][1]
+    let strip = neopixel.create(arr_tech_pin[pin], pixelAnzahl, NeoPixelMode.RGB)
+    neop_ges[snr] = strip
+
+    strip.setBrightness(strip_helligkeit)
+    strip.clear()
+    strip.show()
+    
+    neo_strip_anzahl = Math.max(snr + 1, neo_strip_anzahl)
+
+    
+    // let xstrip: Array<neopixel.Strip>=[]
+    let xstrip: neopixel.Strip[] =[]
+    for (let z = 0; z < hwy; z++) {
+        //zstrip[z] = neop_ges[snr].range(z * hwx, hwx)
+        //strip_ranges[snr*hwx][z]=neop_ges[snr].range(z * hwx, hwx)
+        // strip_ranges.push(neop_ges[snr].range(z * hwx, hwx))
+        xstrip.push(neop_ges[snr].range(z * hwx, hwx))
+        //strip_ranges[snr][z]=neop_ges[snr].range(z * hwx, hwx)
+        //strip_ranges.push(neop_ges[snr].range(z * hwx, hwx))
+//serial.writeLine("z" + xx[0])
+
+
+
+    }
+    strip_ranges.push(xstrip)
+
+    let xx:neopixel.Strip[]
+    for (let z = 0; z < hwy; z++) {
+        xx=strip_ranges[snr]
+        // console.log(snr+" "+xx[z].start+" bis "+xx.length())
+
+    }
+// serial.writeLine("snr" + snr)
+
+
+
+
+
+// xx[0].setPixelColor(0, NeoPixelColors.Green);
+// xx[0].show()
+
+
+
+// strip_ranges[0][1].setPixelColor(12, NeoPixelColors.Blue);
+// strip_ranges[0][1].show()
+
+}
+
 
 function set_punkt(snr:number=0,x: number, y:number, color: number) {
     hwx = arr_neop_settings[snr].hwMatrix[0];
@@ -24,9 +80,10 @@ function set_system(sname: number) {
         basic.showString("M")
     }
     if (sname == 2) { //baatest
-        init_strip(0,2,0) //standard, 8x8,pin0 
-        init_strip(1,2,1) //standard, 8x8,pin1 
-        init_strip(2,1,2) //standard, 5x7,pin2 
+        // init_strip(0,2,0) //standard, 8x8,pin0 
+        init_strip(0,2,1) //standard, 8x8,pin0 
+        init_strip(1,2,2) //standard, 8x8,pin1 
+//        init_strip(2,1,2) //standard, 5x7,pin2 
         basic.showString("B")
     }
 
@@ -46,12 +103,14 @@ function scrollen (zstrip: neopixel.Strip[]) {
         zstrip[strip].shift(sh)
     }
 }
-function get_ystreifen(bit:number=0,x_add:number=0,color:number,zstrip:neopixel.Strip[]) {
+function get_ystreifen(zeichen_matrix:Array<number>,bit:number=0,x_add:number=0,color:number,zstrip:neopixel.Strip[] ) {
     zeichen_matrix.forEach(function (zahl, zeile) {
         if (zahl & Math.pow(2, bit)) {
             let b=bit+x_add
             let px=(zeile % 2) ? (hwx-1-b):b
             zstrip[zeile].setPixelColor(px, color)
+            //neop_ges[0].setPixelColor(px, color)
+            //console.log("z:"+zeile+"/"+px+ " "+zahl);
         }
     })
 }
@@ -68,9 +127,16 @@ function frei_matrix(zch_str:string) {
   
 let a_txt = ["","",""]  
 function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=false) {
+    
     a_txt[snr]=txt    
+music.playTone(Note.C, music.beat())
     hwx = arr_neop_settings[snr].hwMatrix[0];
     hwy = arr_neop_settings[snr].hwMatrix[1];
+    // for (let neopixel.hsl(0, 0, 0) = 0; n <= hwy; n++) {
+    //     //zstrip[n] = neop_ges[snr].range(n * hwx, hwx)
+    //     strip_ranges[snr][n]=neop_ges[snr].range(n * hwx, hwx)
+    //     //strip_ranges[1][n]=neop_ges[1].range(n * hwx, hwx)
+    // }
 
     const center=Math.floor((hwx-zch_bit_breite)/2) 
 
@@ -80,14 +146,10 @@ function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=fa
     neop_ges[snr].clear()
     // let zstrip: neopixel.Strip[]=[]  
 
-    // neop_ges_teil[snr]:neopixel.Strip[]=zstrip
+    // strip_ranges[snr]:neopixel.Strip[]=zstrip
 
-    for (let n = 0; n <= hwy; n++) {
-        //zstrip[n] = neop_ges[snr].range(n * hwx, hwx)
-        neop_ges_teil[snr][n]=neop_ges[snr].range(n * hwx, hwx)
-    }
 
-    //neop_ges_teil[snr]=zstrip
+    //strip_ranges[snr]=zstrip
 
     // let iii=0;
     // let int_snr=control.setInterval(function () {
@@ -107,38 +169,53 @@ function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=fa
             neop_ges[snr].clear()
         }
         
-        serial.writeValue(a_txt[snr], snr)
-        zeichen_matrix=get_bst_matrix(a_txt[snr][bst_pos])
+        
+        const zeichen_matrix:Array<number>=get_bst_matrix(a_txt[snr][bst_pos])
+
+let con=a_txt[snr] + "/" +a_txt[snr][bst_pos];
+//console.log(con)
+//serial.writeValue(con, snr)
+
+
         let str = zch_bit_breite;
-        for (let n=str;n>=0;n--) {
+        for (let s=str;s>=0;s--) {
+
             if (scroll_flag) {
 
-serial.writeValue(a_txt[snr], snr)
-//console.log(neop_ges_teil[snr])
-// const xxx = neop_ges_teil[snr]
-                get_ystreifen(n,-n,color,neop_ges_teil[snr])
+                get_ystreifen(zeichen_matrix,s,-s,color,strip_ranges[snr])
                 
                 neop_ges[snr].show()
                 basic.pause(pause_bst/10)
-//basic.pause(pause_bst/20)    
-//console.log(neop_ges_teil[snr])            
-                scrollen(neop_ges_teil[snr])
+          
+                scrollen(strip_ranges[snr])
             } else {
-                get_ystreifen(n,center,color,neop_ges_teil[snr])
+                get_ystreifen(zeichen_matrix,s,center,color,strip_ranges[snr])
                 neop_ges[snr].show()
-                basic.pause(80)
+                //get_ystreifen(s,center,color,strip_ranges[1])
+                
+                //neop_ges[1].show()
+                //basic.pause(80)
+
+                // if (snr==0) {
+                //     music.playTone(Note.G, music.beat())
+                // }
+                
+
+
             }
         }
         if (!scroll_flag) {
             neop_ges[snr].show()
             if (a_txt[snr].length>1) {
                 basic.pause(pause_bst)
+                //basic.pause(2000)
             }
         }    
     }
     if (hwx>zch_bit_breite) {
         neop_ges[snr].show()
     }
+    music.playTone(Note.E, music.beat())
     //control.clearInterval(int_snr, control.IntervalMode.Interval)
 }
 
@@ -257,17 +334,6 @@ function default_strip_data() {
     arr_neop_settings.push({ pin: arr_tech_pin[2], hwMatrix: arr_tech_matrix[1] })
 }
 
-function init_strip(nrMatrix: number, hwMatrix: number, pin: number) {
-    arr_neop_settings[nrMatrix].pin = pin;
-    arr_neop_settings[nrMatrix].hwMatrix = arr_tech_matrix[hwMatrix];
-    let pixelAnzahl = arr_tech_matrix[hwMatrix][0] * arr_tech_matrix[hwMatrix][1]
-    let strip = neopixel.create(arr_tech_pin[pin], pixelAnzahl, NeoPixelMode.RGB)
-    strip.setBrightness(strip_helligkeit)
-    neop_ges[nrMatrix] = strip
-    strip.clear()
-    strip.show()
-    neo_strip_anzahl = Math.max(nrMatrix + 1, neo_strip_anzahl)
-}
 
 
 function set_helligkeit(helligkeit: number, zch_pause: number) {
@@ -308,16 +374,11 @@ const zch_bit_breite:number=5
 
 let neop_ges: Array<neopixel.Strip> = []
 let arr_neop_settings: Array<neop> = []
+let strip_ranges:Array<neopixel.Strip[]> = []
+// let strip_ranges:Array<neopixel.Strip[]> = []
 
 
 
-
-let xstrip: neopixel.Strip[]=[]  
-let neop_ges_teil:Array<neopixel.Strip[]> = []
-
-neop_ges_teil.push(xstrip)
-neop_ges_teil.push(xstrip)
-neop_ges_teil.push(xstrip)
 
 
 
@@ -329,6 +390,37 @@ let bst_reihe: string = "";
 //beginn initialisierung ############################
 init_alphabet();
 default_strip_data();
-set_system(1);
+set_system(2);
+
+let yy:neopixel.Strip[]
+yy=strip_ranges[0]
+yy[0].setPixelColor(0, NeoPixelColors.Blue);
+yy[0].show()
+
+
+yy=strip_ranges[1]
+yy[0].setPixelColor(0, NeoPixelColors.Green);
+yy[0].show()
+
+yy=strip_ranges[1]
+yy[0].setPixelColor(1, NeoPixelColors.Green);
+yy[0].show()
+
+
+//console.log("?? "+yy[0].start+" bis "+yy[0].length())
+
+yy=strip_ranges[0]
+yy[0].setPixelColor(1, NeoPixelColors.Red);
+yy[0].show()
+
+
+
+
+basic.showNumber(strip_ranges.length)
+
+// showtext (0,"ABCDEEF",neopixel.colors(NeoPixelColors.Red),true)
+// showtext (1,"abcdefg",neopixel.colors(NeoPixelColors.Blue),true)
+
+
 
 // ende Initialisierung
