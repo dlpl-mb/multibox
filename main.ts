@@ -34,7 +34,7 @@ function init_strip(snr: number, hwMatrix: number, pin: number) {
     strip.show()
     neo_strip_anzahl = Math.max(snr + 1, neo_strip_anzahl)
 
-    //serial.writeLine(m_sname + ":sname " +snr + ":snr len: "+neop_ranges.length+" "+neop_ranges[snr]+" "+arr_tech_matrix[hwMatrix][1]);
+    //serial.writeLine(snr + ":snr len: "+neop_ranges.length+" "+neop_ranges[snr]+" "+arr_tech_matrix[hwMatrix][0]+"/"+arr_tech_matrix[hwMatrix][1]);
 
     let xstrip: neopixel.Strip[] =[]
     for (let z = 0; z < arr_tech_matrix[hwMatrix][1]; z++) {
@@ -62,12 +62,12 @@ function set_punkt(snr:number=0,x: number, y:number, color: number) {
 }
 
 
-function get_bst_matrix(zch: string = "A") {
+function get_bst_matrix(zch: string = "A",hwy:number) {
     let found = bst_reihe.indexOf(zch)
     if (found==-1) {
         found=0;
     }
-    return arr_zeichen[found]
+    return arr_zeichen[found].slice(0,hwy)
 }
 
 function scrollen (zstrip: neopixel.Strip[]) {
@@ -112,7 +112,8 @@ function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=fa
         if (!scroll_flag) {
             neop_ges[snr].clear()
         }
-        let zeichen_matrix:Array<number>=get_bst_matrix(txt[bst_pos])
+        //basic.showNumber(hwy)
+        let zeichen_matrix:Array<number>=get_bst_matrix(txt[bst_pos],hwy)
         let str = zch_bit_breite;
         for (let s=str;s>=0;s--) {
             if (scroll_flag) {
@@ -304,4 +305,6 @@ let bst_reihe: string = "";
 init_alphabet();
 default_strip_data();
 set_system(1);
+//showtext (0,"A",neopixel.colors(NeoPixelColors.Red),false)
+
 // ende Initialisierung
