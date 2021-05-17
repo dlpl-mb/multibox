@@ -10,8 +10,8 @@ enum sName {
     standard,
     //% block="MultiBox"
     multibox,
-    //% block="BaaTest"
-    baatest
+    //% block="MB-Cube"
+    mbcube
 }
 
 enum nrMatrix {

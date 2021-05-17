@@ -1,8 +1,17 @@
+// input.onButtonPressed(Button.A, function () {
+//     showtext (0,"12",neopixel.colors(NeoPixelColors.Red),false)
+// })
+// input.onButtonPressed(Button.B, function () {
+//     showtext (1,"23",neopixel.colors(NeoPixelColors.Blue),false)
+// })
+
+
+
 function set_system(sname: number) {
     //m_sname=sname
     if (sname == 0) {
         init_strip(0,2,1) //standard, 8x8,pin1 
-        basic.showString("S")
+        basic.showString("T")
     }
 
     if (sname == 1) { //wolf
@@ -10,13 +19,12 @@ function set_system(sname: number) {
         init_strip(1,1,1) //rechts, 7x5,pin1  
         basic.showString("M")
     }
-    if (sname == 2) { //baatest
+    if (sname == 2) { //mb-cube
         init_strip(0,2,1) //standard, 8x8,pin0 
         init_strip(1,2,2) //standard, 8x8,pin1 
         init_strip(2,1,3) //standard, 5x7,pin2 
-        basic.showString("B")
+        basic.showString("C")
     }
-
 }
 
 function init_strip(snr: number, hwMatrix: number, pin: number) {
@@ -49,8 +57,8 @@ function init_strip(snr: number, hwMatrix: number, pin: number) {
 }
 
 function set_punkt(snr:number=0,x: number, y:number, color: number) {
-    hwx = arr_neop_settings[snr].hwMatrix[0];
-    hwy = arr_neop_settings[snr].hwMatrix[1];
+    const hwx = arr_neop_settings[snr].hwMatrix[0];
+    const hwy = arr_neop_settings[snr].hwMatrix[1];
     //let px = (hwy-y-1)*hwy + ((y % 2) ? hwx-(x % hwx)-1:(x % hwx))
     let t= x 
     if ((y % 2)!=(hwy % 2)) {
@@ -70,17 +78,17 @@ function get_bst_matrix(zch: string = "A",hwy:number) {
     return arr_zeichen[found].slice(0,hwy)
 }
 
-function scrollen (zstrip: neopixel.Strip[]) {
-    for (let strip = 0; strip < hwy; strip++) {
+function scrollen (zstrip: neopixel.Strip[],hy:number) {
+    for (let strip = 0; strip < hy; strip++) {
         let sh = (strip % 2) ? -1:1
         zstrip[strip].shift(sh)
     }
 }
-function get_ystreifen(z_matrix:Array<number>,bit:number=0,x_add:number=0,color:number,zstrip:neopixel.Strip[]) {
+function get_ystreifen(z_matrix:Array<number>,bit:number=0,x_add:number=0,color:number,zstrip:neopixel.Strip[],hx:number) {
     z_matrix.forEach(function (zahl, zeile) {
         if (zahl & Math.pow(2, bit)) {
             let b=bit+x_add
-            let px=(zeile % 2) ? (hwx-1-b):b
+            let px=(zeile % 2) ? (hx-1-b):b
             zstrip[zeile].setPixelColor(px, color)
         }
     })
@@ -99,8 +107,8 @@ function frei_matrix(zch_str:string) {
 
 function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=false) {
 
-    hwx = arr_neop_settings[snr].hwMatrix[0];
-    hwy = arr_neop_settings[snr].hwMatrix[1];
+    const hwx = arr_neop_settings[snr].hwMatrix[0];
+    const hwy = arr_neop_settings[snr].hwMatrix[1];
 
     const center=Math.floor((hwx-zch_bit_breite)/2) 
 
@@ -117,12 +125,12 @@ function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=fa
         let str = zch_bit_breite;
         for (let s=str;s>=0;s--) {
             if (scroll_flag) {
-                get_ystreifen(zeichen_matrix,s,-s,color,neop_ranges[snr])
+                get_ystreifen(zeichen_matrix,s,-s,color,neop_ranges[snr],hwx)
                 neop_ges[snr].show()
                 basic.pause(pause_bst/10)
-                scrollen(neop_ranges[snr])
+                scrollen(neop_ranges[snr],hwy)
             } else {
-                get_ystreifen(zeichen_matrix,s,center,color,neop_ranges[snr])
+                get_ystreifen(zeichen_matrix,s,center,color,neop_ranges[snr],hwx)
                 neop_ges[snr].show()
                 basic.pause(80)
             }
@@ -264,9 +272,10 @@ function set_helligkeit(helligkeit: number, zch_pause: number) {
     }
 }
 function testen() {
-    // showtext (0,"1",neopixel.colors(NeoPixelColors.Red),true)
-    // showtext (1,"2",neopixel.colors(NeoPixelColors.Red),true)
-    // showtext (2,"3",neopixel.colors(NeoPixelColors.Red),true)
+    showtext (0,"1",neopixel.colors(NeoPixelColors.Red),true)
+    showtext (1,"2",neopixel.colors(NeoPixelColors.Blue),true)
+    showtext (0,"1",neopixel.colors(NeoPixelColors.Green),true)
+    //showtext (2,"3",neopixel.colors(NeoPixelColors.Green),true)
 }
 
 
@@ -287,8 +296,6 @@ let shift: number = 0
 let strip_helligkeit: number = 80;
 let pause_bst: number = 2000; //auch scrollspeed
 //let m_sname=-1
-let hwx:number=8
-let hwy:number=8
 const zch_bit_breite:number=5
 
 let arr_neop_settings: Array<neop> = []
@@ -305,6 +312,8 @@ let bst_reihe: string = "";
 init_alphabet();
 default_strip_data();
 set_system(1);
-//showtext (0,"A",neopixel.colors(NeoPixelColors.Red),false)
+
+// set_system(3);
+// testen();
 
 // ende Initialisierung
