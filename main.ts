@@ -99,8 +99,11 @@ function frei_matrix(zch_str:string) {
     let zch_len = zch_str.length
     if (zch_str.indexOf(";")>-1) {
         const arr_split = zch_str.split(";")
-        arr_zeichen[80]=arr_split.map(wert => parseInt(wert));
-        ret=";";
+        if (arr_split.length>2) {
+            arr_zeichen[80]=arr_split.map(wert => parseInt(wert));
+            zch_bit_breite=arr_split.length
+            ret=";"
+        }
     };
     return ret
 }    
@@ -110,10 +113,11 @@ function showtext (snr:number,txt:string="A",color:number,scroll_flag:boolean=fa
     const hwx = arr_neop_settings[snr].hwMatrix[0];
     const hwy = arr_neop_settings[snr].hwMatrix[1];
 
-    const center=Math.floor((hwx-zch_bit_breite)/2) 
+    let center=Math.floor((hwx-zch_bit_breite)/2) 
 
     if (frei_matrix(txt)==";") {
-        txt=";";
+        txt=";"
+        center=0 //zentrieren ausschalten, auch zeichen_bit_breite wird gesetzt
     }
     neop_ges[snr].clear()
     for (let bst_pos = 0; bst_pos < txt.length; bst_pos++) {
@@ -296,7 +300,7 @@ let shift: number = 0
 let strip_helligkeit: number = 80;
 let pause_bst: number = 2000; //auch scrollspeed
 //let m_sname=-1
-const zch_bit_breite:number=5
+let zch_bit_breite:number=5
 
 let arr_neop_settings: Array<neop> = []
 let neop_ges: Array<neopixel.Strip> = []
