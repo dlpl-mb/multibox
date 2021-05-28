@@ -20,9 +20,9 @@ function set_system(sname: number) {
         basic.showString("M")
     }
     if (sname == 2) { //mb-cube
-        init_strip(0,2,1) //standard, 8x8,pin0 
-        init_strip(1,2,2) //standard, 8x8,pin1 
-        init_strip(2,1,3) //standard, 5x7,pin2 
+        init_strip(0,1,1) //standard, 5x7,pin1 
+        init_strip(1,2,2) //standard, 8x8,pin2 
+        init_strip(2,2,3) //standard, 8x8,pin3 
         basic.showString("C")
     }
 }
@@ -59,12 +59,15 @@ function init_strip(snr: number, hwMatrix: number, pin: number) {
 function set_punkt(snr:number=0,x: number, y:number, color: number) {
     const hwx = arr_neop_settings[snr].hwMatrix[0];
     const hwy = arr_neop_settings[snr].hwMatrix[1];
+
+
     //let px = (hwy-y-1)*hwy + ((y % 2) ? hwx-(x % hwx)-1:(x % hwx))
     let t= x 
     if ((y % 2)!=(hwy % 2)) {
        t=(hwx - 1 - x)
     }
     let px = (hwy-1-y) * hwx + t
+    //serial.writeValue("x", px)    
     neop_ges[snr].setPixelColor(px, color);
     neop_ges[snr].show()
 }
